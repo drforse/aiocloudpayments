@@ -1,0 +1,1 @@
+from .startsession import CpApplepayStartsessionEndpoint
