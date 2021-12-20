@@ -4,13 +4,9 @@ from typing import Union
 
 from aiohttp import ClientSession, BasicAuth, ClientError
 
-from aiocloudpayments.endpoints.base import CpEndpoint, CpType
-from aiocloudpayments.exceptions import CpNetworkError, CpTooManyRequests, CpBadRequestError, CpPaymentError, CpAPIError
-
-try:
-    import ujson as json
-except ImportError:
-    import json
+from ..endpoints.base import CpEndpoint, CpType
+from ..exceptions import CpNetworkError, CpTooManyRequests, CpBadRequestError, CpPaymentError, CpAPIError
+from ..utils import json
 
 DEFAULT_TIMEOUT = 300.0
 

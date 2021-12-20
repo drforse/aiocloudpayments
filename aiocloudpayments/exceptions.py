@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aiocloudpayments.endpoints.base import CpEndpoint
+from .endpoints.base import CpEndpoint
 
 
 class AioCloudPaymentsError(Exception):

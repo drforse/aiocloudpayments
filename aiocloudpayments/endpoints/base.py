@@ -5,8 +5,9 @@ from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 from pydantic.utils import to_camel
 
-from aiocloudpayments.types.transaction import Transaction
-from aiocloudpayments.types.secure_3d import Secure3D
+from ..types.transaction import Transaction
+from ..types.secure_3d import Secure3D
+from ..utils import json
 
 CpType = TypeVar("CpType", bound=Any)
 
@@ -25,6 +26,10 @@ class Request(BaseModel):
         if self.x_signature:
             result.update({"X-Signature": self.x_signature})
         return result or None
+
+    class Config:
+        json_loads = json.loads
+        json_dumps = json.dumps
 
 
 class Response(GenericModel, Generic[CpType]):
@@ -58,5 +63,7 @@ class CpEndpoint(abc.ABC, BaseModel):
         return Response[self.__returning__](**data)
 
     class Config:
+        json_loads = json.loads
+        json_dumps = json.dumps
         alias_generator = to_camel
         allow_population_by_field_name = True
