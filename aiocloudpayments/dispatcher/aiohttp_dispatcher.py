@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from aiohttp import web
 from aiohttp.abc import Application
@@ -22,10 +23,14 @@ NOTIFICATION_TYPES = {
 class AiohttpDispatcher(Router):
     def __init__(self, index: int = None):
         self._web_paths = {}
+        self.ip_whitelist = None
 
         super().__init__(index)
 
     async def process_request(self, request: web.Request) -> web.Response:
+        if self.ip_whitelist and request.remote not in self.ip_whitelist and "0.0.0.0" not in self.ip_whitelist:
+            logger.warning(f"skip request from ip {request.remote} because it is not in ip_whitelist")
+            return web.json_response(status=401)
         name = self._web_paths[request.url.name]
         notification_type = NOTIFICATION_TYPES.get(name)
         if notification_type is None:
@@ -90,6 +95,9 @@ class AiohttpDispatcher(Router):
             fail_path: str = None,
             recurrent_path: str = None,
             refund_path: str = None,
+            allow_ips: Optional[set[str]] = frozenset({"127.0.0.1", "130.193.70.192",
+                                                       "185.98.85.109", "91.142.84.0/27",
+                                                       "87.251.91.160/27", "185.98.81.0/28"}),
             **kwargs
     ):
         """
@@ -105,8 +113,10 @@ class AiohttpDispatcher(Router):
         :param fail_path:
         :param recurrent_path:
         :param refund_path:
+        :param allow_ips: only allow requests from this ips
         :param kwargs: aiohttp run_app parameters
         """
+        self.ip_whitelist = allow_ips
         app = web.Application()
         self.register_app(
             app, path, pay_path, cancel_path, check_path, confirm_path,
