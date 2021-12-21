@@ -1,6 +1,6 @@
 # aiocloudpayments
 Python Async [CloudPayments](https://developers.cloudpayments.ru/#api) Library
-# Basic Usage Example
+# Client Basic Usage Example
 ```
 from datetime import date
 
@@ -36,6 +36,46 @@ async def main():
     )
 
     await client.disconnect()
+```
+# AiohttpDispatcher Basic Usage Example
+```
+from aiocloudpayments import AiohttpDispatcher, Result
+from aiocloudpayments.types import PayNotification, CancelNotification
+
+
+def dp_test():
+    dp = AiohttpDispatcher()
+
+    # router is not needed here, but I am just showing the logic
+    router = Router()
+
+    # register with router
+    @router.cancel(lambda n: 5 > n.amount > 1)
+    async def foo(notification: CancelNotification):
+        print(f"{notification=}")
+        # return {"result": 0}
+        return Result.OK
+
+    # register with router
+    @router.pay(lambda n: n.amount <= 1)
+    async def foo(notification: PayNotification):
+        print(f"{notification.amount=}")
+        # return {"result": 12}
+        return Result.WRONG_AMOUNT
+
+    # register with dp
+    @dp.cancel(lambda n: n.amount > 5)
+    async def foo(notification: CancelNotification):
+        print(f"{notification.amount=}, > 5")
+        # if you don't return anything, Result.OK is assumed
+
+    dp.include_router(router)
+
+    dp.run_app(
+        "/test",
+        pay_path="/pay",
+        cancel_path="/cancel"
+    )
 ```
 
 architecture inspired by [aiogram](https://github.com/aiogram/aiogram)

@@ -15,7 +15,7 @@ from ..endpoints.subscriptions import CpSubscriptionsCancelEndpoint, CpSubscript
 from ..endpoints.orders import CpOrdersCreateEndpoint, CpOrdersCancelEndpoint
 from ..endpoints.notifications import CpNotificationsGetEndpoint, CpNotificationsUpdateEndpoint
 from ..endpoints.applepay import CpApplepayStartsessionEndpoint
-from ..types import ApplepaySession, Notification, Order, Person, Secure3D, Subscription, Token,\
+from ..types import ApplepaySession, NotificationInfo, Order, Person, Secure3D, Subscription, Token,\
     Transaction, TransactionInList
 from ..typehints import NUMERIC
 
@@ -339,7 +339,7 @@ class AioCpClient(BaseCpClient):
             type: str,
             timeout: int = None,
             x_request_id: str = None
-    ) -> Notification:
+    ) -> NotificationInfo:
         endpoint = CpNotificationsGetEndpoint(**_payload(locals()))
         return await self.request(endpoint, timeout=timeout)
 

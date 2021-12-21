@@ -1,7 +1,7 @@
 from .base import CpObject
 
 
-class Notification(CpObject):
+class NotificationInfo(CpObject):
     is_enabled: bool = None
     address: str = None
     http_method: str = None

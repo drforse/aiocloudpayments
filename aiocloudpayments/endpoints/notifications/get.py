@@ -1,9 +1,9 @@
 from ..base import CpEndpoint, Request
-from ...types.notification import Notification
+from ...types.notification_info import NotificationInfo
 
 
 class CpNotificationsGetEndpoint(CpEndpoint):
-    __returning__ = Notification
+    __returning__ = NotificationInfo
 
     type: str
 
