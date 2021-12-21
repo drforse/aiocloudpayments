@@ -11,6 +11,7 @@ from ..types.notifications import CancelNotification, CheckNotification, Confirm
     FailNotification, PayNotification, RecurrentNotification, RefundNotification
 from ..utils import json
 from ..utils.hmac_check import hmac_check
+from .base_dispatcher import BaseDispatcher
 
 logger = logging.getLogger("aiocloudpayments.dispatcher")
 
@@ -21,12 +22,12 @@ NOTIFICATION_TYPES = {
 }
 
 
-class AiohttpDispatcher(Router):
+class AiohttpDispatcher(BaseDispatcher):
     def __init__(self, index: int = None):
         self._web_paths = {}
-        self.ip_whitelist = None
-        self.check_hmac = True
-        self.cp_client: Optional[AioCpClient] = None
+        self._ip_whitelist = None
+        self._check_hmac = True
+        self._cp_client: Optional[AioCpClient] = None
 
         super().__init__(index)
 
@@ -139,3 +140,27 @@ class AiohttpDispatcher(Router):
             fail_path, recurrent_path, refund_path
         )
         web.run_app(app, **kwargs)
+
+    @property
+    def ip_whitelist(self) -> Optional[set]:
+        return self._ip_whitelist
+
+    @ip_whitelist.setter
+    def ip_whitelist(self, value: Optional[set]):
+        self._ip_whitelist = value
+
+    @property
+    def check_hmac(self) -> bool:
+        return self._check_hmac
+
+    @check_hmac.setter
+    def check_hmac(self, value: bool):
+        self._check_hmac = value
+
+    @property
+    def cp_client(self) -> Optional[AioCpClient]:
+        return self._cp_client
+
+    @cp_client.setter
+    def cp_client(self, value: Optional[AioCpClient]):
+        self._cp_client = value
