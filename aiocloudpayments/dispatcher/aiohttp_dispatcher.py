@@ -48,8 +48,7 @@ class AiohttpDispatcher(Router):
             confirm_path: str = None,
             fail_path: str = None,
             recurrent_path: str = None,
-            refund_path: str = None,
-            **kwargs):
+            refund_path: str = None):
         """
         Register route
         All if path doesn't end with "/", sub-paths should start with it and vice-versa
@@ -78,7 +77,7 @@ class AiohttpDispatcher(Router):
                 continue
             self._web_paths[path_.replace("/", "")] = name
             app.router.add_route(
-                "POST", path + path_, self.process_request, **kwargs
+                "POST", path + path_, self.process_request
             )
 
     def run_app(
@@ -106,11 +105,11 @@ class AiohttpDispatcher(Router):
         :param fail_path:
         :param recurrent_path:
         :param refund_path:
-        :param kwargs:
+        :param kwargs: aiohttp run_app parameters
         """
         app = web.Application()
         self.register_app(
             app, path, pay_path, cancel_path, check_path, confirm_path,
-            fail_path, recurrent_path, refund_path, **kwargs
+            fail_path, recurrent_path, refund_path
         )
-        web.run_app(app)
+        web.run_app(app, **kwargs)

@@ -43,7 +43,11 @@ from aiocloudpayments import AiohttpDispatcher, Result
 from aiocloudpayments.types import PayNotification, CancelNotification
 
 
-def dp_test():
+CERT_FILE = "cert.pem"
+CERT_FILE = "pkey.pem"
+
+
+def main():
     dp = AiohttpDispatcher()
 
     # router is not needed here, but I am just showing the logic
@@ -71,10 +75,14 @@ def dp_test():
 
     dp.include_router(router)
 
+    ssl_context = SSLContext()
+    ssl_context.load_cert_chain(CERT_FILE, KEY_FILE)
+
     dp.run_app(
         "/test",
         pay_path="/pay",
-        cancel_path="/cancel"
+        cancel_path="/cancel",
+        ssl_context=ssl_context
     )
 ```
 
