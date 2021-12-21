@@ -79,10 +79,12 @@ def main():
     ssl_context.load_cert_chain(CERT_FILE, KEY_FILE)
 
     dp.run_app(
+        AioCpClient(PUBLIC_ID, API_SECRET),
         "/test",
         pay_path="/pay",
         cancel_path="/cancel",
-        ssl_context=ssl_context
+        ssl_context=ssl_context,
+        check_hmac=False  # disable hmac check, only use in development environments
     )
 ```
 

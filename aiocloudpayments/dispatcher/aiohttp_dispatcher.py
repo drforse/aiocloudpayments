@@ -6,10 +6,11 @@ from aiohttp.abc import Application
 
 from .callback import Result
 from .router import Router
+from .. import AioCpClient
 from ..types.notifications import CancelNotification, CheckNotification, ConfirmNotification, \
     FailNotification, PayNotification, RecurrentNotification, RefundNotification
 from ..utils import json
-
+from ..utils.hmac_check import hmac_check
 
 logger = logging.getLogger("aiocloudpayments.dispatcher")
 
@@ -24,6 +25,8 @@ class AiohttpDispatcher(Router):
     def __init__(self, index: int = None):
         self._web_paths = {}
         self.ip_whitelist = None
+        self.check_hmac = True
+        self.cp_client: Optional[AioCpClient] = None
 
         super().__init__(index)
 
@@ -31,6 +34,13 @@ class AiohttpDispatcher(Router):
         if self.ip_whitelist and request.remote not in self.ip_whitelist and "0.0.0.0" not in self.ip_whitelist:
             logger.warning(f"skip request from ip {request.remote} because it is not in ip_whitelist")
             return web.json_response(status=401)
+        if self.check_hmac is True and hmac_check(
+                await request.read(),
+                self.cp_client._api_secret,
+                request.get("Content-HMAC")) is False:
+            logger.warning(f"skip request from because hmac check failed: {request} from {request.remote}")
+            return web.json_response(status=401)
+
         name = self._web_paths[request.url.name]
         notification_type = NOTIFICATION_TYPES.get(name)
         if notification_type is None:
@@ -87,6 +97,7 @@ class AiohttpDispatcher(Router):
 
     def run_app(
             self,
+            cp_client: AioCpClient,
             path: str,
             pay_path: str = None,
             cancel_path: str = None,
@@ -98,6 +109,7 @@ class AiohttpDispatcher(Router):
             allow_ips: Optional[set[str]] = frozenset({"127.0.0.1", "130.193.70.192",
                                                        "185.98.85.109", "91.142.84.0/27",
                                                        "87.251.91.160/27", "185.98.81.0/28"}),
+            check_hmac: bool = True,
             **kwargs
     ):
         """
@@ -105,6 +117,7 @@ class AiohttpDispatcher(Router):
         All if path doesn't end with "/", sub-paths should start with it and vice-versa
         Only not-null paths are registered :)
 
+        :param cp_client: AioCpClient
         :param path: route main path
         :param pay_path: sub-path for pay notifications
         :param cancel_path:
@@ -114,9 +127,12 @@ class AiohttpDispatcher(Router):
         :param recurrent_path:
         :param refund_path:
         :param allow_ips: only allow requests from this ips
+        :param check_hmac: pass False to disable hmac check
         :param kwargs: aiohttp run_app parameters
         """
         self.ip_whitelist = allow_ips
+        self.cp_client = cp_client
+        self.check_hmac = check_hmac
         app = web.Application()
         self.register_app(
             app, path, pay_path, cancel_path, check_path, confirm_path,
