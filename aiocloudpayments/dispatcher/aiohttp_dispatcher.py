@@ -1,11 +1,13 @@
+import asyncio
 import logging
-from typing import Optional
+from typing import Optional, Callable, Awaitable
 
 from aiohttp import web
 from aiohttp.abc import Application
 
 from .callback import Result
 from .router import Router
+from .typehints import CALLBACK_TYPE
 from .. import AioCpClient
 from ..types.notifications import CancelNotification, CheckNotification, ConfirmNotification, \
     FailNotification, PayNotification, RecurrentNotification, RefundNotification
@@ -111,6 +113,8 @@ class AiohttpDispatcher(BaseDispatcher):
                                                        "185.98.85.109", "91.142.84.0/27",
                                                        "87.251.91.160/27", "185.98.81.0/28"}),
             check_hmac: bool = True,
+            on_startup: Callable[[web.Application], Awaitable[None]] = None,
+            on_shutdown: Callable[[web.Application], Awaitable[None]] = None,
             **kwargs
     ):
         """
@@ -129,16 +133,23 @@ class AiohttpDispatcher(BaseDispatcher):
         :param refund_path:
         :param allow_ips: only allow requests from this ips
         :param check_hmac: pass False to disable hmac check
+        :param on_startup:
+        :param on_shutdown:
         :param kwargs: aiohttp run_app parameters
         """
         self.ip_whitelist = allow_ips
         self.cp_client = cp_client
         self.check_hmac = check_hmac
         app = web.Application()
+        if on_startup:
+            app.on_startup.append(on_startup)
+        if on_shutdown:
+            app.on_shutdown.append(on_shutdown)
         self.register_app(
             app, path, pay_path, cancel_path, check_path, confirm_path,
             fail_path, recurrent_path, refund_path
         )
+
         web.run_app(app, **kwargs)
 
     @property

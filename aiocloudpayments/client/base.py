@@ -22,9 +22,14 @@ class BaseCpClient:
     ):
         self._public_id = public_id
         self._api_secret = api_secret
-        self._session = session or ClientSession()
+        self._session = session
         self._base_url = base_url
         self._default_timeout = requests_timeout
+
+    async def get_session(self) -> ClientSession:
+        if self._session is None or self._session.closed:
+            self._session = ClientSession()
+        return self._session
 
     async def request(self, endpoint: CpEndpoint, timeout: int = None) -> CpType:
         auth = BasicAuth(self._public_id, self._api_secret)
@@ -33,7 +38,8 @@ class BaseCpClient:
         headers.update(request.headers or {})
 
         try:
-            async with self._session.post(
+            session = await self.get_session()
+            async with session.post(
                 self._base_url + request.endpoint,
                 data=request.json_str,
                 headers=headers,
