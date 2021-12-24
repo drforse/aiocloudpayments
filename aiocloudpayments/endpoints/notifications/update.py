@@ -15,5 +15,5 @@ class CpNotificationsUpdateEndpoint(CpEndpoint):
         return Request(
             endpoint=f"site/notifications/{self.type}/update",
             x_request_id=self.x_request_id,
-            json_str=self.json(exclude={"x_request_id", "x_signature"}, by_alias=True)
+            json_str=self.json(exclude={"x_request_id", "x_signature"}, by_alias=True, exclude_none=True)
         )
