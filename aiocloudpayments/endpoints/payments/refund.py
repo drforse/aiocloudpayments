@@ -1,9 +1,10 @@
 from ..base import CpEndpoint, Request
 from ...typehints import NUMERIC
+from ...types import Refund
 
 
 class CpPaymentsRefundEndpoint(CpEndpoint):
-    __returning__ = None
+    __returning__ = Refund
 
     transaction_id: int
     amount: NUMERIC

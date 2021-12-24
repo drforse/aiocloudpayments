@@ -9,3 +9,4 @@ from .transaction import Transaction
 from .transaction_in_list import TransactionInList
 from .notifications import CancelNotification, ConfirmNotification, CheckNotification, FailNotification,\
     PayNotification, RecurrentNotification, RefundNotification
+from .refund import Refund

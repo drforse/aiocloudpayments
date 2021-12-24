@@ -15,8 +15,8 @@ from ..endpoints.subscriptions import CpSubscriptionsCancelEndpoint, CpSubscript
 from ..endpoints.orders import CpOrdersCreateEndpoint, CpOrdersCancelEndpoint
 from ..endpoints.notifications import CpNotificationsGetEndpoint, CpNotificationsUpdateEndpoint
 from ..endpoints.applepay import CpApplepayStartsessionEndpoint
-from ..types import ApplepaySession, NotificationInfo, Order, Person, Secure3D, Subscription, Token,\
-    Transaction, TransactionInList
+from ..types import ApplepaySession, NotificationInfo, Order, Person, Secure3D, Subscription, Token, \
+    Transaction, TransactionInList, Refund
 from ..typehints import NUMERIC
 
 DEFAULT_PAYLOAD_EXCLUDE = ["self", "timeout"]
@@ -77,7 +77,7 @@ class AioCpClient(BaseCpClient):
             json_data: dict = None,
             timeout: int = None,
             x_request_id: str = None
-    ):
+    ) -> Refund:
         endpoint = CpPaymentsRefundEndpoint(**_payload(locals()))
         return await self.request(endpoint, timeout=timeout)
 
