@@ -73,4 +73,5 @@ class BaseCpClient:
         raise CpAPIError(endpoint, response.message)
 
     async def disconnect(self):
-        await self._session.close()
+        if self._session is not None and self._session.closed is False:
+            await self._session.close()
