@@ -13,7 +13,7 @@ class PayNotification(CpObject):
     currency: str
     payment_amount: str
     payment_currency: str
-    datetime: datetime
+    date_time: datetime
     card_first_six: str
     card_last_four: str
     card_type: str
