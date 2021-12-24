@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import Json
+
 from ..base import CpObject
 
 
@@ -14,4 +16,4 @@ class RefundNotification(CpObject):
     invoice_id: str = None
     account_id: str = None
     email: str = None
-    data: dict = None
+    data: Json = None

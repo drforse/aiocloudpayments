@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from typing import Optional, Callable, Awaitable
 
@@ -6,12 +5,9 @@ from aiohttp import web
 from aiohttp.abc import Application
 
 from .callback import Result
-from .router import Router
-from .typehints import CALLBACK_TYPE
 from .. import AioCpClient
 from ..types.notifications import CancelNotification, CheckNotification, ConfirmNotification, \
     FailNotification, PayNotification, RecurrentNotification, RefundNotification
-from ..utils import json
 from ..utils.hmac_check import hmac_check
 from .base_dispatcher import BaseDispatcher
 
@@ -49,7 +45,7 @@ class AiohttpDispatcher(BaseDispatcher):
         if notification_type is None:
             logger.error(f"notification type {name} not supported")
             return web.json_response(status=500)
-        notification = notification_type(**(await request.json(loads=json.loads)))
+        notification = notification_type(**(await request.post()))
         result = await self.process_notification(notification)
         if result == Result.INTERNAL_ERROR:
             return web.json_response(status=500)

@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import Json
+
 from ..base import CpObject
 
 
@@ -37,4 +39,4 @@ class CheckNotification(CpObject):
     description: str = None
     card_product: str = None
     payment_method: str = None
-    data: dict = None
+    data: Json = None

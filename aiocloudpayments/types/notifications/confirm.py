@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import Json
+
 from ..base import CpObject
 
 
@@ -34,6 +36,6 @@ class ConfirmNotification(CpObject):
     issuer_bank_country: str = None
     description: str = None
     auth_code: str = None
-    data: dict = None
+    data: Json = None
     token: str = None
     payment_method: str = None

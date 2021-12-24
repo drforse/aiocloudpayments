@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pydantic import Json
+
 from ..base import CpObject
 
 
@@ -35,7 +37,7 @@ class FailNotification(CpObject):
     issuer: str = None
     issuer_bank_country: str = None
     description: str = None
-    data: dict = None
+    data: Json = None
     token: str = None
     payment_method: str = None
     fall_back_scenario_declined_transaction_id: int = None
