@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiocloudpayments"
-version = "0.0.8"
+version = "0.0.9"
 description = "CloudPayments Python Async Library"
 authors = ["drforse <george.lifeslice@gmail.com>"]
 readme = "README.md"

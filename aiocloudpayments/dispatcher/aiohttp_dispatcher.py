@@ -36,7 +36,7 @@ class AiohttpDispatcher(BaseDispatcher):
         if self.check_hmac is True and hmac_check(
                 await request.read(),
                 self.cp_client._api_secret,
-                request.get("Content-HMAC")) is False:
+                request.headers.get("Content-HMAC")) is False:
             logger.warning(f"skip request from because hmac check failed: {request} from {request.remote}")
             return web.json_response(status=401)
 
