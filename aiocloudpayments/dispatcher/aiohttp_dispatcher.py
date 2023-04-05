@@ -47,10 +47,12 @@ class AiohttpDispatcher(BaseDispatcher):
             return web.json_response(status=500)
         notification = notification_type(**(await request.post()))
         result = await self.process_notification(notification)
+        if notification_type != CheckNotification and result not in [Result.OK, Result.INTERNAL_ERROR, Result.SKIP]:
+            raise ValueError(f"Invalid result {result} for notification {notification_type},"
+                             f" only ok, skip and internal_error are allowed")
         if result == Result.INTERNAL_ERROR:
             return web.json_response(status=500)
-        if result:
-            return web.json_response({"code": result.value})
+        return web.json_response({"code": result.value})
 
     def register_app(
             self,
