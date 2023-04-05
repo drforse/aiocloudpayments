@@ -71,6 +71,7 @@ class Router:
             if result != Result.SKIP:
                 return result
         logger.warning(f"Notification was sent to server, but not handled: {notification}")
+        return Result.SKIP
 
     def __str__(self):
         return f"{type.__class__.__name__}({self.index})"

@@ -52,6 +52,8 @@ class AiohttpDispatcher(BaseDispatcher):
                              f" only ok, skip and internal_error are allowed")
         if result == Result.INTERNAL_ERROR:
             return web.json_response(status=500)
+        if result == Result.SKIP:
+            return web.json_response({"code": Result.OK.value})
         return web.json_response({"code": result.value})
 
     def register_app(
