@@ -40,7 +40,7 @@ async def main():
 # AiohttpDispatcher Basic Usage Example
 ```
 from aiocloudpayments import AiohttpDispatcher, Result
-from aiocloudpayments.types import PayNotification, CancelNotification
+from aiocloudpayments.types import PayNotification, CancelNotification, CheckNotification
 
 
 CERT_FILE = "cert.pem"
@@ -63,6 +63,13 @@ def main():
     # register with router
     @router.pay(lambda n: n.amount <= 1)
     async def foo(notification: PayNotification):
+        print(f"{notification.amount=}")
+        # return {"result": 0}
+        return Result.OK
+        
+   # register with router
+    @router.check()
+    async def foo(notification: CheckNotification):
         print(f"{notification.amount=}")
         # return {"result": 12}
         return Result.WRONG_AMOUNT
